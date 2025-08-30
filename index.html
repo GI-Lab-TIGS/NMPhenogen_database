@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NMPhenogen Database</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+  th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+  th { background-color: #007bff; color: white; }
+  tr:nth-child(even) { background-color: #f2f2f2; }
+  a { color: #1a73e8; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<h1>NMPhenogen Database</h1>
+
+<input type="text" id="search-input" placeholder="Search..." style="padding:10px; width:100%; max-width:400px;">
+
+<table id="data-table">
+  <thead>
+    <tr id="table-headers">
+      <!-- Headers will be dynamically inserted here -->
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Rows will be dynamically inserted here -->
+  </tbody>
+</table>
+
+<script>
+async function loadJSON() {
+    try {
+        const response = await fetch('nmphenogen_data.json');
+        if (!response.ok) throw new Error('JSON file not found');
+        const data = await response.json();
+        const tbody = document.querySelector('#data-table tbody');
+        const thead = document.getElementById('table-headers');
+
+        // Clear previous content
+        tbody.innerHTML = '';
+        thead.innerHTML = '';
+
+        if (data.length === 0) return;
+
+        // Dynamically create headers based on JSON keys
+        const keys = Object.keys(data[0]);
+        keys.forEach(key => {
+            const th = document.createElement('th');
+            th.textContent = key;
+            thead.appendChild(th);
+        });
+
+        // Populate rows
+        data.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = keys.map(key => {
+                // Make links clickable if field contains 'link' or 'url'
+                if (typeof item[key] === 'string' && (key.toLowerCase().includes('link') || key.toLowerCase().includes('url'))) {
+                    return `<td><a href="${item[key]}" target="_blank">Link</a></td>`;
+                } else {
+                    return `<td>${item[key] !== null && item[key] !== undefined ? item[key] : ''}</td>`;
+                }
+            }).join('');
+            tbody.appendChild(tr);
+        });
+
+        // Setup search filter
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', () => {
+            const term = searchInput.value.toLowerCase();
+            tbody.querySelectorAll('tr').forEach(row => {
+                row.style.display = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(term)) ? '' : 'none';
+            });
+        });
+
+    } catch (err) {
+        console.error(err);
+        alert('Failed to load JSON data.');
+    }
+}
+
+// Load JSON on page load
+window.addEventListener('DOMContentLoaded', loadJSON);
+</script>
+
+</body>
+</html>
