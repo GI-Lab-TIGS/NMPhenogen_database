@@ -76,7 +76,10 @@ async function loadJSON() {
             });
         });
 
-    } 
+    } catch (err) {
+        console.error(err);
+        alert('Failed to load JSON data.');
+    }
 }
 
 // Load JSON on page load
