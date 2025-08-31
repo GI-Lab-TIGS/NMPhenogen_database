@@ -64,26 +64,42 @@ data.forEach(item => {
         const value = item[key];
         if (!value) return `<td></td>`;
 
+        // Direct OMIM fields
         if (key.toLowerCase().includes('omim') || key.toLowerCase().includes('mim')) {
             const id = extractID(value);
             return `<td><a href="https://www.omim.org/entry/${id}" target="_blank">${id}</a></td>`;
-        } 
+        }
+
+        // Direct Orphanet fields
         else if (key.toLowerCase().includes('orphanet')) {
             const id = extractID(value);
             return `<td><a href="https://www.orpha.net/en/disease/detail/${id}" target="_blank">${id}</a></td>`;
-        } 
-        else if (key.toLowerCase().includes('phenotype_link')) {
-            const id = extractID(value);
-            return `<td><a href="${value}" target="_blank">${id}</a></td>`;
         }
-        else if (key.toLowerCase().includes('malacards')) {
-            // Always show as "Link", not the actual ID/URL
-            return `<td><a href="${value}" target="_blank">Link</a></td>`;
-        } 
+
+        // Phenotype links (mixed sources)
+        else if (key.toLowerCase().includes('phenotype_link')) {
+            if (value.includes("omim.org")) {
+                const id = extractID(value);
+                return `<td><a href="https://www.omim.org/entry/${id}" target="_blank">${id}</a></td>`;
+            } 
+            else if (value.includes("orpha.net")) {
+                const id = extractID(value);
+                return `<td><a href="https://www.orpha.net/en/disease/detail/${id}" target="_blank">${id}</a></td>`;
+            } 
+            else if (value.includes("malacards.org")) {
+                return `<td><a href="${value}" target="_blank">Link</a></td>`;
+            } 
+            else {
+                return `<td><a href="${value}" target="_blank">${value}</a></td>`;
+            }
+        }
+
+        // Default (non-special fields)
         else {
             return `<td>${value}</td>`;
         }
     }).join('');
+
     tbody.appendChild(tr);
 });
 
@@ -106,6 +122,7 @@ window.addEventListener('DOMContentLoaded', loadJSON);
 
 </body>
 </html>
+
 
 
 
