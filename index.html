@@ -70,6 +70,11 @@ async function loadJSON() {
                     ? `<td><a href="https://www.orpha.net/en/disease/detail/${item[key]}" target="_blank">${item[key]}</a></td>` 
                     : `<td></td>`;
             } 
+            else if (key.toLowerCase().includes('malacards')) {
+                return item[key] 
+                    ? `<td><a href="${item[key]}" target="_blank">Link</a></td>` 
+                    : `<td></td>`;
+            } 
             else {
                 return `<td>${item[key] !== null && item[key] !== undefined ? item[key] : ''}</td>`;
             }
@@ -91,7 +96,9 @@ window.addEventListener('DOMContentLoaded', loadJSON);
 </script>
 
 
+
 </body>
 </html>
+
 
 
