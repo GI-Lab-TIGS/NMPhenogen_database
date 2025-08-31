@@ -64,27 +64,25 @@ data.forEach(item => {
         const value = item[key];
         if (!value) return `<td></td>`;
 
-        // Direct OMIM fields
+        // OMIM handling
         if (key.toLowerCase().includes('omim') || key.toLowerCase().includes('mim')) {
             const id = extractID(value);
-            return `<td><a href="https://www.omim.org/entry/${id}" target="_blank">${id}</a></td>`;
-        }
-
-        // Direct Orphanet fields
+            return `<td><a href="${value}" target="_blank">${id}</a></td>`;
+        } 
+        // Orphanet handling
         else if (key.toLowerCase().includes('orphanet')) {
             const id = extractID(value);
-            return `<td><a href="https://www.orpha.net/en/disease/detail/${id}" target="_blank">${id}</a></td>`;
+            return `<td><a href="${value}" target="_blank">${id}</a></td>`;
         }
-
-        // Phenotype links (mixed sources)
+        // Phenotype link column
         else if (key.toLowerCase().includes('phenotype_link')) {
             if (value.includes("omim.org")) {
                 const id = extractID(value);
-                return `<td><a href="https://www.omim.org/entry/${id}" target="_blank">${id}</a></td>`;
+                return `<td><a href="${value}" target="_blank">${id}</a></td>`;
             } 
             else if (value.includes("orpha.net")) {
                 const id = extractID(value);
-                return `<td><a href="https://www.orpha.net/en/disease/detail/${id}" target="_blank">${id}</a></td>`;
+                return `<td><a href="${value}" target="_blank">${id}</a></td>`;
             } 
             else if (value.includes("malacards.org")) {
                 return `<td><a href="${value}" target="_blank">Link</a></td>`;
@@ -93,13 +91,11 @@ data.forEach(item => {
                 return `<td><a href="${value}" target="_blank">${value}</a></td>`;
             }
         }
-
-        // Default (non-special fields)
+        // Default case
         else {
             return `<td>${value}</td>`;
         }
     }).join('');
-
     tbody.appendChild(tr);
 });
 
@@ -122,6 +118,7 @@ window.addEventListener('DOMContentLoaded', loadJSON);
 
 </body>
 </html>
+
 
 
 
