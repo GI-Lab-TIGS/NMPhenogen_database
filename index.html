@@ -58,30 +58,33 @@ async function loadJSON() {
     }
 
     // Populate rows
-    data.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = keys.map(key => {
-            const value = item[key];
+data.forEach(item => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = keys.map(key => {
+        const value = item[key];
+        if (!value) return `<td></td>`;
 
-            if (!value) return `<td></td>`;
-
-            if (key.toLowerCase().includes('omim') || key.toLowerCase().includes('mim')) {
-                const id = extractID(value);
-                return `<td><a href="https://www.omim.org/entry/${id}" target="_blank">${id}</a></td>`;
-            } 
-            else if (key.toLowerCase().includes('orphanet')) {
-                const id = extractID(value);
-                return `<td><a href="https://www.orpha.net/en/disease/detail/${id}" target="_blank">${id}</a></td>`;
-            } 
-            else if (key.toLowerCase().includes('malacards')) {
-                return `<td><a href="${value}" target="_blank">Link</a></td>`;
-            } 
-            else {
-                return `<td>${value}</td>`;
-            }
-        }).join('');
-        tbody.appendChild(tr);
-    });
+        if (key.toLowerCase().includes('omim') || key.toLowerCase().includes('mim')) {
+            const id = extractID(value);
+            return `<td><a href="https://www.omim.org/entry/${id}" target="_blank">${id}</a></td>`;
+        } 
+        else if (key.toLowerCase().includes('orphanet')) {
+            const id = extractID(value);
+            return `<td><a href="https://www.orpha.net/en/disease/detail/${id}" target="_blank">${id}</a></td>`;
+        } 
+        else if (key.toLowerCase().includes('phenotype_link')) {
+            const id = extractID(value);
+            return `<td><a href="${value}" target="_blank">${id}</a></td>`;
+        }
+        else if (key.toLowerCase().includes('malacards')) {
+            return `<td><a href="${value}" target="_blank">Link</a></td>`;
+        } 
+        else {
+            return `<td>${value}</td>`;
+        }
+    }).join('');
+    tbody.appendChild(tr);
+});
 
     // Search filter
     const searchInput = document.getElementById('search-input');
@@ -101,6 +104,7 @@ window.addEventListener('DOMContentLoaded', loadJSON);
 
 </body>
 </html>
+
 
 
 
