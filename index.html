@@ -51,32 +51,33 @@ async function loadJSON() {
         thead.appendChild(th);
     });
 
+    // Helper function: extract last number from URL
+    function extractID(url) {
+        const match = url.match(/(\d+)/g);
+        return match ? match[match.length - 1] : url;
+    }
+
     // Populate rows
     data.forEach(item => {
         const tr = document.createElement('tr');
         tr.innerHTML = keys.map(key => {
-            if (key.toLowerCase().includes('omim')) {
-                return item[key] 
-                    ? `<td><a href="https://www.omim.org/entry/${item[key]}" target="_blank">${item[key]}</a></td>` 
-                    : `<td></td>`;
-            } 
-            else if (key.toLowerCase().includes('mim')) {
-                return item[key] 
-                    ? `<td><a href="https://omim.org/entry/${item[key]}" target="_blank">${item[key]}</a></td>` 
-                    : `<td></td>`;
+            const value = item[key];
+
+            if (!value) return `<td></td>`;
+
+            if (key.toLowerCase().includes('omim') || key.toLowerCase().includes('mim')) {
+                const id = extractID(value);
+                return `<td><a href="https://www.omim.org/entry/${id}" target="_blank">${id}</a></td>`;
             } 
             else if (key.toLowerCase().includes('orphanet')) {
-                return item[key] 
-                    ? `<td><a href="https://www.orpha.net/en/disease/detail/${item[key]}" target="_blank">${item[key]}</a></td>` 
-                    : `<td></td>`;
+                const id = extractID(value);
+                return `<td><a href="https://www.orpha.net/en/disease/detail/${id}" target="_blank">${id}</a></td>`;
             } 
             else if (key.toLowerCase().includes('malacards')) {
-                return item[key] 
-                    ? `<td><a href="${item[key]}" target="_blank">Link</a></td>` 
-                    : `<td></td>`;
+                return `<td><a href="${value}" target="_blank">Link</a></td>`;
             } 
             else {
-                return `<td>${item[key] !== null && item[key] !== undefined ? item[key] : ''}</td>`;
+                return `<td>${value}</td>`;
             }
         }).join('');
         tbody.appendChild(tr);
@@ -97,8 +98,10 @@ window.addEventListener('DOMContentLoaded', loadJSON);
 
 
 
+
 </body>
 </html>
+
 
 
 
