@@ -32,60 +32,66 @@
 
 <script>
 async function loadJSON() {
-    try {
-        const response = await fetch('nmphenogen_data.json');
-        if (!response.ok) throw new Error('JSON file not found');
-        const data = await response.json();
-        const tbody = document.querySelector('#data-table tbody');
-        const thead = document.getElementById('table-headers');
+    const response = await fetch('nmphenogen_data.json');
+    const data = await response.json();
+    const tbody = document.querySelector('#data-table tbody');
+    const thead = document.getElementById('table-headers');
 
-        // Clear previous content
-        tbody.innerHTML = '';
-        thead.innerHTML = '';
+    // Clear previous content
+    tbody.innerHTML = '';
+    thead.innerHTML = '';
 
-        if (data.length === 0) return;
+    if (data.length === 0) return;
 
-        // Dynamically create headers based on JSON keys
-        const keys = Object.keys(data[0]);
-        keys.forEach(key => {
-            const th = document.createElement('th');
-            th.textContent = key;
-            thead.appendChild(th);
+    // Dynamically create headers
+    const keys = Object.keys(data[0]);
+    keys.forEach(key => {
+        const th = document.createElement('th');
+        th.textContent = key;
+        thead.appendChild(th);
+    });
+
+    // Populate rows
+    data.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = keys.map(key => {
+            if (key.toLowerCase().includes('omim')) {
+                return item[key] 
+                    ? `<td><a href="https://www.omim.org/entry/${item[key]}" target="_blank">${item[key]}</a></td>` 
+                    : `<td></td>`;
+            } 
+            else if (key.toLowerCase().includes('mim')) {
+                return item[key] 
+                    ? `<td><a href="https://omim.org/entry/${item[key]}" target="_blank">${item[key]}</a></td>` 
+                    : `<td></td>`;
+            } 
+            else if (key.toLowerCase().includes('orphanet')) {
+                return item[key] 
+                    ? `<td><a href="https://www.orpha.net/en/disease/detail/${item[key]}" target="_blank">${item[key]}</a></td>` 
+                    : `<td></td>`;
+            } 
+            else {
+                return `<td>${item[key] !== null && item[key] !== undefined ? item[key] : ''}</td>`;
+            }
+        }).join('');
+        tbody.appendChild(tr);
+    });
+
+    // Search filter
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase();
+        tbody.querySelectorAll('tr').forEach(row => {
+            row.style.display = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(term)) ? '' : 'none';
         });
-
-        // Populate rows
-        data.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = keys.map(key => {
-                // Make links clickable if field contains 'link' or 'url'
-                if (typeof item[key] === 'string' && (key.toLowerCase().includes('link') || key.toLowerCase().includes('url'))) {
-                    return `<td><a href="${item[key]}" target="_blank">Link</a></td>`;
-                } else {
-                    return `<td>${item[key] !== null && item[key] !== undefined ? item[key] : ''}</td>`;
-                }
-            }).join('');
-            tbody.appendChild(tr);
-        });
-
-        // Setup search filter
-        const searchInput = document.getElementById('search-input');
-        searchInput.addEventListener('input', () => {
-            const term = searchInput.value.toLowerCase();
-            tbody.querySelectorAll('tr').forEach(row => {
-                row.style.display = Array.from(row.cells).some(cell => cell.textContent.toLowerCase().includes(term)) ? '' : 'none';
-            });
-        });
-
-    } catch (err) {
-        console.error(err);
-        alert('Failed to load JSON data.');
-    }
+    });
 }
 
-// Load JSON on page load
 window.addEventListener('DOMContentLoaded', loadJSON);
 </script>
 
+
 </body>
 </html>
+
 
